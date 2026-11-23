@@ -4,11 +4,11 @@ from tokenizers.trainers import BpeTrainer
 from tokenizers.pre_tokenizers import ByteLevel
 from tokenizers.decoders import ByteLevel as ByteLevelDecoder
 
-with open(r"slm-learning\input.txt",'r',encoding = 'utf-8') as f:
-    text = f.read()
+# with open(r"slm-learning\TinyStoriesV2-GPT4-train.txt",'r',encoding = 'utf-8') as f:
+#     train_text = f.read()
 
-n = int(0.9*len(text))
-train_text = text[:n]
+# n = int(0.9*len(text))
+# train_text = text[:n]
 
 tokenizer = Tokenizer(BPE(unk_token = "<|unk|>"))
 
@@ -18,13 +18,15 @@ tokenizer.decoder = ByteLevelDecoder()
 trainer = BpeTrainer(
     vocab_size = 2000,
     min_frequency = 2,
-    special_tokens = ["<|unk|>"],
+    special_tokens = ["<|unk|>","<|endoftext|>"],
     initial_alphabet = ByteLevel.alphabet()
 )
 
-tokenizer.train_from_iterator([train_text],trainer = trainer)
+train_file = r"slm-learning\TinyStoriesV2-GPT4-train.txt"
+tokenizer.train([train_file],trainer)
+# tokenizer.train_from_iterator([train_text],trainer = trainer)
 
-tokenizer.save("tokenizer.json")
+tokenizer.save("tinystories_tokenizer.json")
 
 print("Vocabulary size ", tokenizer.get_vocab_size())
 

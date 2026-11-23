@@ -1,14 +1,14 @@
 import torch
 import model
 from tokenizers import Tokenizer
-tokenizer = Tokenizer.from_file("tokenizer.json")
+tokenizer = Tokenizer.from_file("tinystories_tokenizer.json")
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # encode = lambda s: [stoi[c] for c in s]
 # decode = lambda l: ''.join([itos[i] for i in l])
 checkpoint = torch.load(
-    'shakespeare_gpt.pth',
+    'best_model.pth',
     map_location=device,
     weights_only=True
 )
@@ -32,7 +32,7 @@ model.load_state_dict(checkpoint['model_state_dict'])
 model.eval()
 
 # Generate
-prompt = "ROMEO:"
+prompt = "One day, Sarah found a small bird lying under a tree. It could not fly because"
 context = torch.tensor(
     [tokenizer.encode(prompt).ids],
     dtype=torch.long,
@@ -42,5 +42,5 @@ context = torch.tensor(
 generated = model.generate(context, max_new_tokens=1000)
 generated_text = tokenizer.decode(generated[0].tolist())
 
-with open(r'slm-learning\generated.txt','w',encoding='utf-8') as f:
+with open(r'slm-learning\tinystories_generated.txt','w',encoding='utf-8') as f:
     f.write(generated_text)
